@@ -53,12 +53,18 @@ public class UndirectedGraph extends AbstractGraph {
             map.get(neighborId).remove(nodeId);
         }
         
+        edges -= neighbors.size();
         map.remove(nodeId);
         return true;
     }
 
     @Override
     public boolean addEdge(int tailNodeId, int headNodeId, double weight) {
+        if (tailNodeId == headNodeId) {
+            // Undirected graph are not allowed to contain self-loops.
+            return false;
+        }
+        
         addNode(tailNodeId);
         addNode(headNodeId);
         
