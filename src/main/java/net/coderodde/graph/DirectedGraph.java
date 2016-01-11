@@ -27,22 +27,29 @@ public class DirectedGraph extends AbstractGraph {
 
     @Override
     public int getNumberOfEdges() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return edges;
     }
 
     @Override
     public boolean addNode(int nodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (parentMap.containsKey(nodeId)) {
+            return false;
+        }
+        
+        parentMap.put(nodeId, new LinkedHashMap<Integer, Double>());
+        childMap.put(nodeId, new LinkedHashMap<Integer, Double>());
+        return true;
     }
 
     @Override
     public boolean hasNode(int nodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return parentMap.containsKey(nodeId);
     }
 
     @Override
     public boolean clearNode(int nodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Map<Integer, Double> map = parentMap.get(nodeId);
+        return true;
     }
 
     @Override
