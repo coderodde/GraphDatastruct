@@ -65,6 +65,20 @@ public class UndirectedGraphTest {
         assertFalse(graph.hasNode(-1));
         assertFalse(graph.hasNode(10));
     }
+    
+    @Test
+    public void testClearNode() {
+        assertEquals(0, graph.getNumberOfEdges());
+        assertTrue(graph.addEdge(1, 2));
+        assertFalse(graph.addEdge(2, 1));
+        assertEquals(1.0, graph.getEdgeWeight(1, 2), E);
+        assertEquals(1.0, graph.getEdgeWeight(2, 1), E);
+        assertTrue(graph.addEdge(1, 5));
+        assertEquals(2, graph.getNumberOfEdges());
+        
+        graph.clearNode(1);
+        assertEquals(0, graph.getNumberOfEdges());
+    }
 
     @Test
     public void testRemoveNode() {

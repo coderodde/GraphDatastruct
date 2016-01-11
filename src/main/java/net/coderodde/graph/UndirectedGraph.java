@@ -40,20 +40,30 @@ public class UndirectedGraph extends AbstractGraph {
     public boolean hasNode(int nodeId) {
         return map.containsKey(nodeId);
     }
-
+    
     @Override
-    public boolean removeNode(int nodeId) {
-        if (!map.containsKey(nodeId)) {
+    public boolean clearNode(int nodeId) {
+        Map<Integer, Double> neighbors = map.get(nodeId);
+        
+        if (neighbors.isEmpty()) {
             return false;
         }
-
-        Map<Integer, Double> neighbors = map.get(nodeId);
         
         for (Integer neighborId : neighbors.keySet()) {
             map.get(neighborId).remove(nodeId);
         }
         
         edges -= neighbors.size();
+        return true;
+    }
+
+    @Override
+    public boolean removeNode(int nodeId) {
+        if (!hasNode(nodeId)) {
+            return false;
+        }
+        
+        clearNode(nodeId);
         map.remove(nodeId);
         return true;
     }

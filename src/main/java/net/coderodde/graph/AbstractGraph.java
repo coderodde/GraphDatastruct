@@ -6,6 +6,10 @@ import java.util.Set;
  * This class defines the API for graph data structures. The actual nodes are 
  * represented as integers. The client programmer should always be able to map
  * his domain specific nodes to the integers. 
+ * <p>
+ * Not only the query methods return a boolean value, but any other method
+ * returns a boolean value indicating whether the structure of the graph has 
+ * changed.
  * 
  * @author Rodion "rodde" Efremov
  * @version 1.6 (Jan 10, 2016)
@@ -45,6 +49,16 @@ public abstract class AbstractGraph {
      *         otherwise.
      */
     public abstract boolean hasNode(int nodeId);
+    
+    /**
+     * If {@code nodeId} is present in this graph, removes all edges incident on
+     * {@code nodeId}.
+     * 
+     * @param nodeId the node to clear.
+     * @return {@code true} if the node {@code nodeId} had at least one incident
+     *         edge and, thus, the structure of the graph changed.
+     */
+    public abstract boolean clearNode(int nodeId);
     
     /**
      * Removes the argument node from this graph.
