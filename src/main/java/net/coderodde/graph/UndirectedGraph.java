@@ -43,6 +43,10 @@ public class UndirectedGraph extends AbstractGraph {
     
     @Override
     public boolean clearNode(int nodeId) {
+        if (!hasNode(nodeId)) {
+            return false;
+        }
+        
         Map<Integer, Double> neighbors = map.get(nodeId);
         
         if (neighbors.isEmpty()) {
@@ -54,6 +58,7 @@ public class UndirectedGraph extends AbstractGraph {
         }
         
         edges -= neighbors.size();
+        neighbors.clear();
         return true;
     }
 

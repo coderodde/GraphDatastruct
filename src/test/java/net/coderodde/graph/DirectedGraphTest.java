@@ -30,6 +30,33 @@ public class DirectedGraphTest {
 
     @Test
     public void testGetNumberOfEdges() {
+        assertEquals(0, graph.getNumberOfEdges());
+        assertTrue(graph.addEdge(0, 1));
+        assertEquals(1, graph.getNumberOfEdges());
+        assertFalse(graph.addEdge(0, 1));
+        assertEquals(1, graph.getNumberOfEdges());
+        assertTrue(graph.addEdge(0, 1, 2.0));
+        assertEquals(1, graph.getNumberOfEdges());
+        
+        assertTrue(graph.addEdge(1, 2, 3.0));
+        assertEquals(2, graph.getNumberOfEdges());
+        assertTrue(graph.addEdge(2, 1, 4.0));
+        assertEquals(3, graph.getNumberOfEdges());
+        
+        assertTrue(graph.addEdge(0, 2));
+        assertEquals(4, graph.getNumberOfEdges());
+        assertTrue(graph.addEdge(2, 0, 10.0));
+        assertEquals(5, graph.getNumberOfEdges());
+        
+        assertTrue(graph.clearNode(1));
+        assertEquals(2, graph.getNumberOfEdges());
+        
+        assertTrue(graph.removeEdge(2, 0));
+        assertEquals(1, graph.getNumberOfEdges());
+        assertTrue(graph.removeNode(0));
+        assertTrue(graph.removeNode(2));
+        
+        assertEquals(0, graph.getNumberOfEdges());
     }
 
     @Test

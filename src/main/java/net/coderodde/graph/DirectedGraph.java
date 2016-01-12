@@ -1,6 +1,7 @@
 package net.coderodde.graph;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,10 @@ public class DirectedGraph extends AbstractGraph {
 
     @Override
     public boolean clearNode(int nodeId) {
+        if (!hasNode(nodeId)) {
+            return false;
+        }
+            
         Map<Integer, Double> parents = parentMap.get(nodeId);
         Map<Integer, Double> children = childMap.get(nodeId);
         
@@ -56,15 +61,18 @@ public class DirectedGraph extends AbstractGraph {
             return false;
         }
         
-        for (Integer childId : parents.keySet()) {
+        for (Integer childId : children.keySet()) {
             parentMap.get(childId).remove(nodeId);
         }
         
-        for (Integer parentId : children.keySet()) {
+        for (Integer parentId : parents.keySet()) {
             childMap.get(parentId).remove(nodeId);
         }
         
-        edges -= children.size() + parents.size();
+        edges -= parents.size();
+        edges -= children.size();
+        parents.clear();
+        children.clear();
         return true;
     }
 
