@@ -1,5 +1,6 @@
 package net.coderodde.graph;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,53 +49,118 @@ public class DirectedGraph extends AbstractGraph {
 
     @Override
     public boolean clearNode(int nodeId) {
-        Map<Integer, Double> map = parentMap.get(nodeId);
+        Map<Integer, Double> parents = parentMap.get(nodeId);
+        Map<Integer, Double> children = childMap.get(nodeId);
+        
+        if (parents.isEmpty() && children.isEmpty()) {
+            return false;
+        }
+        
+        for (Integer childId : parents.keySet()) {
+            parentMap.get(childId).remove(nodeId);
+        }
+        
+        for (Integer parentId : children.keySet()) {
+            childMap.get(parentId).remove(nodeId);
+        }
+        
+        edges -= children.size() + parents.size();
         return true;
     }
 
     @Override
     public boolean removeNode(int nodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!hasNode(nodeId)) {
+            return false;
+        }
+        
+        clearNode(nodeId);
+        parentMap.remove(nodeId);
+        childMap.remove(nodeId);
+        return true;
     }
 
     @Override
     public boolean addEdge(int tailNodeId, int headNodeId, double weight) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        addNode(tailNodeId);
+        addNode(headNodeId);
+        
+        if (childMap.get(tailNodeId).containsKey(headNodeId)) {
+            double oldWeight = childMap.get(tailNodeId).get(headNodeId);
+            childMap.get(tailNodeId).put(headNodeId, weight);
+            parentMap.get(headNodeId).put(tailNodeId, weight);
+            return oldWeight != weight;
+        } else {
+            childMap.get(tailNodeId).put(headNodeId, weight);
+            parentMap.get(headNodeId).put(tailNodeId, weight);
+            ++edges;
+            return true;
+        }
     }
 
     @Override
     public boolean hasEdge(int tailNodeId, int headNodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!childMap.containsKey(tailNodeId)) {
+            return false;
+        }
+        
+        return childMap.get(tailNodeId).containsKey(headNodeId);
     }
 
     @Override
     public double getEdgeWeight(int tailNodeId, int headNodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!hasEdge(tailNodeId, headNodeId)) {
+            return Double.NaN;
+        }
+        
+        return childMap.get(tailNodeId).get(headNodeId);
     }
 
     @Override
     public boolean removeEdge(int tailNodeId, int headNodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!childMap.containsKey(tailNodeId)) {
+            return false;
+        }
+        
+        if (!childMap.get(tailNodeId).containsKey(headNodeId)) {
+            return false;
+        }
+        
+        childMap.get(tailNodeId).remove(headNodeId);
+        parentMap.get(headNodeId).remove(tailNodeId);
+        --edges;
+        return true;
     }
 
     @Override
     public Set<Integer> getChildrenOf(int nodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!childMap.containsKey(nodeId)) {
+            return Collections.<Integer>emptySet();
+        }
+        
+        return Collections.
+                <Integer>unmodifiableSet(childMap.get(nodeId).keySet());
     }
 
     @Override
     public Set<Integer> getParentsOf(int nodeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!parentMap.containsKey(nodeId)) {
+            return Collections.<Integer>emptySet();
+        }
+        
+        return Collections.
+                <Integer>unmodifiableSet(parentMap.get(nodeId).keySet());
     }
 
     @Override
     public Set<Integer> getAllNodes() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Collections.<Integer>unmodifiableSet(childMap.keySet());
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        childMap.clear();
+        parentMap.clear();
+        edges = 0;
     }
-    
 }
