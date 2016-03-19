@@ -15,23 +15,37 @@ import java.util.Set;
  * @version 1.6 (Jan 10, 2016)
  */
 public abstract class AbstractGraph {
+
+    /**
+     * This field caches the amount of changes made to this graph. This is used
+     * for keeping track whether the structure of the graph has changed since 
+     * the previous check of the modification count. Adding or removing a node
+     * contributes one unit to the counter, and adding or removing or updating 
+     * an edge contributes one unit as well. Note, that if we remove a node that
+     * has incident edges to it, the counter will reflect the removal of the 
+     * edges as well.
+     */
+    protected int modificationCount;
     
+    /**
+     * Caches the number of edges in this graph.
+     */
     protected int edges;
-    
+
     /**
      * Returns the number of nodes in this graph.
      * 
      * @return the size of this graph. 
      */
     public abstract int size();
-    
+
     /**
      * Returns the number of edges in this graph.
      * 
      * @return the number of edges. 
      */
     public abstract int getNumberOfEdges();
-    
+
     /**
      * Adds the node with ID {@code nodeId} to this graph.
      * 
@@ -40,7 +54,7 @@ public abstract class AbstractGraph {
      *         the same as that the added node was not present in the graph.
      */
     public abstract boolean addNode(int nodeId);
-    
+
     /**
      * Checks whether the given node is present in this graph.
      * 
@@ -49,7 +63,7 @@ public abstract class AbstractGraph {
      *         otherwise.
      */
     public abstract boolean hasNode(int nodeId);
-    
+
     /**
      * If {@code nodeId} is present in this graph, removes all edges incident on
      * {@code nodeId}.
@@ -59,7 +73,7 @@ public abstract class AbstractGraph {
      *         edge and, thus, the structure of the graph changed.
      */
     public abstract boolean clearNode(int nodeId);
-    
+
     /**
      * Removes the argument node from this graph.
      * 
@@ -68,7 +82,7 @@ public abstract class AbstractGraph {
      *         means that the structure of the graph has changed.
      */
     public abstract boolean removeNode(int nodeId);
-    
+
     /**
      * Creates an edge between {@code tailNodeId} and {@code headNodeId} with 
      * weight {@code weight}. It depends on the concrete implementation of this
@@ -88,7 +102,7 @@ public abstract class AbstractGraph {
     public abstract boolean addEdge(int tailNodeId, 
                                     int headNodeId, 
                                     double weight);
-    
+
     /**
      * Creates an edge between {@code tailNodeId} and {@code headNodeId} with
      * the default weight of 1.0. This method is a shortcut for constructing
@@ -102,7 +116,7 @@ public abstract class AbstractGraph {
     public boolean addEdge(int tailNodeId, int headNodeId) {
         return addEdge(tailNodeId, headNodeId, 1.0);
     }
-    
+
     /**
      * Returns a boolean value indicating whether this graph contains an edge
      * from {@code tailNodeId} to {@code headNodeId}. 
@@ -112,7 +126,7 @@ public abstract class AbstractGraph {
      * @return {@code true} only if the query edge is in this graph.
      */
     public abstract boolean hasEdge(int tailNodeId, int headNodeId);
-    
+
     /**
      * Returns the weight of the edge {@code (tailNodeId, headNodeId)}. If the
      * query edge does not exist, returns {@link java.lang.Double#NaN}.
@@ -122,7 +136,7 @@ public abstract class AbstractGraph {
      * @return the weight of the edge.
      */
     public abstract double getEdgeWeight(int tailNodeId, int headNodeId);
-    
+
     /**
      * Removes the edge from {@code tailNodeId} and {@code headNodeId}.
      * 
@@ -132,7 +146,7 @@ public abstract class AbstractGraph {
      *         removed.
      */
     public abstract boolean removeEdge(int tailNodeId, int headNodeId);
-    
+
     /**
      * Returns the set of all nodes that are children of the node 
      * {@code nodeId}. It depends on the actual graph implementation what is 
@@ -144,7 +158,7 @@ public abstract class AbstractGraph {
      * @return set of nodes that are children on the argument node.
      */
     public abstract Set<Integer> getChildrenOf(int nodeId);
-    
+
     /**
      * Returns the set of all nodes that are parents of the node {@code nodeId}.
      * 
@@ -153,16 +167,25 @@ public abstract class AbstractGraph {
      * @return set of nodes that are parent of the arugment node.
      */
     public abstract Set<Integer> getParentsOf(int nodeId);
-    
+
     /**
      * Returns the set of all nodes stored in this graph.
      * 
      * @return the set of all nodes.
      */
     public abstract Set<Integer> getAllNodes();
-    
+
     /**
      * Removes all nodes and edges from this graph.
      */
     public abstract void clear();
+    
+    /**
+     * Returns the modification count of this graph.
+     * 
+     * @return the modification count of this graph. 
+     */
+    public int getModificationCount() {
+        return modificationCount;
+    }
 }

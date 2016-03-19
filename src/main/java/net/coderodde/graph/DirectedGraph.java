@@ -1,7 +1,6 @@
 package net.coderodde.graph;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,11 +16,11 @@ public class DirectedGraph extends AbstractGraph {
     private final Map<Integer, 
                       Map<Integer, 
                           Double>> parentMap = new LinkedHashMap<>();
-    
+
     private final Map<Integer, 
                       Map<Integer, 
                           Double>> childMap = new LinkedHashMap<>();
-    
+
     @Override
     public int size() {
         return parentMap.size();
@@ -37,9 +36,10 @@ public class DirectedGraph extends AbstractGraph {
         if (parentMap.containsKey(nodeId)) {
             return false;
         }
-        
-        parentMap.put(nodeId, new LinkedHashMap<Integer, Double>());
-        childMap.put(nodeId, new LinkedHashMap<Integer, Double>());
+
+        parentMap.put(nodeId, new LinkedHashMap<>());
+        childMap .put(nodeId, new LinkedHashMap<>());
+        modificationCount++;
         return true;
     }
 
@@ -53,24 +53,25 @@ public class DirectedGraph extends AbstractGraph {
         if (!hasNode(nodeId)) {
             return false;
         }
-            
+
         Map<Integer, Double> parents = parentMap.get(nodeId);
         Map<Integer, Double> children = childMap.get(nodeId);
-        
+
         if (parents.isEmpty() && children.isEmpty()) {
             return false;
         }
-        
+
         for (Integer childId : children.keySet()) {
             parentMap.get(childId).remove(nodeId);
         }
-        
+
         for (Integer parentId : parents.keySet()) {
             childMap.get(parentId).remove(nodeId);
         }
-        
-        edges -= parents.size();
-        edges -= children.size();
+
+        int mod = parents.size() + children.size();
+        edges -= mod;
+        modificationCount += mod;
         parents.clear();
         children.clear();
         return true;
@@ -81,10 +82,11 @@ public class DirectedGraph extends AbstractGraph {
         if (!hasNode(nodeId)) {
             return false;
         }
-        
+
         clearNode(nodeId);
         parentMap.remove(nodeId);
         childMap.remove(nodeId);
+        modificationCount++;
         return true;
     }
 
@@ -92,16 +94,23 @@ public class DirectedGraph extends AbstractGraph {
     public boolean addEdge(int tailNodeId, int headNodeId, double weight) {
         addNode(tailNodeId);
         addNode(headNodeId);
-        
+
         if (childMap.get(tailNodeId).containsKey(headNodeId)) {
             double oldWeight = childMap.get(tailNodeId).get(headNodeId);
             childMap.get(tailNodeId).put(headNodeId, weight);
             parentMap.get(headNodeId).put(tailNodeId, weight);
-            return oldWeight != weight;
+            
+            if (oldWeight != weight) {
+                modificationCount++;
+                return true;
+            }
+            
+            return false;
         } else {
             childMap.get(tailNodeId).put(headNodeId, weight);
             parentMap.get(headNodeId).put(tailNodeId, weight);
-            ++edges;
+            modificationCount++;
+            edges++;
             return true;
         }
     }
@@ -111,7 +120,7 @@ public class DirectedGraph extends AbstractGraph {
         if (!childMap.containsKey(tailNodeId)) {
             return false;
         }
-        
+
         return childMap.get(tailNodeId).containsKey(headNodeId);
     }
 
@@ -120,7 +129,7 @@ public class DirectedGraph extends AbstractGraph {
         if (!hasEdge(tailNodeId, headNodeId)) {
             return Double.NaN;
         }
-        
+
         return childMap.get(tailNodeId).get(headNodeId);
     }
 
@@ -129,14 +138,15 @@ public class DirectedGraph extends AbstractGraph {
         if (!childMap.containsKey(tailNodeId)) {
             return false;
         }
-        
+
         if (!childMap.get(tailNodeId).containsKey(headNodeId)) {
             return false;
         }
-        
-        childMap.get(tailNodeId).remove(headNodeId);
+
+        childMap .get(tailNodeId).remove(headNodeId);
         parentMap.get(headNodeId).remove(tailNodeId);
-        --edges;
+        modificationCount++;
+        edges--;
         return true;
     }
 
@@ -145,7 +155,7 @@ public class DirectedGraph extends AbstractGraph {
         if (!childMap.containsKey(nodeId)) {
             return Collections.<Integer>emptySet();
         }
-        
+
         return Collections.
                 <Integer>unmodifiableSet(childMap.get(nodeId).keySet());
     }
@@ -155,7 +165,7 @@ public class DirectedGraph extends AbstractGraph {
         if (!parentMap.containsKey(nodeId)) {
             return Collections.<Integer>emptySet();
         }
-        
+
         return Collections.
                 <Integer>unmodifiableSet(parentMap.get(nodeId).keySet());
     }
@@ -167,6 +177,19 @@ public class DirectedGraph extends AbstractGraph {
 
     @Override
     public void clear() {
+        for (Map.Entry<Integer, Map<Integer, Double>> entry : 
+                childMap.entrySet()) {
+            modificationCount += entry.getValue().size();
+            entry.getValue().clear();
+        }
+        
+        for (Map.Entry<Integer, Map<Integer, Double>> entry :
+                parentMap.entrySet()) {
+            modificationCount += entry.getValue().size();
+            entry.getValue().clear();
+        }
+        
+        modificationCount += edges;
         childMap.clear();
         parentMap.clear();
         edges = 0;

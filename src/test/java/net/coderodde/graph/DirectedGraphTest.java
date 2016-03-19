@@ -300,4 +300,39 @@ public class DirectedGraphTest {
         assertEquals(0, graph.size());
         assertEquals(0, graph.getNumberOfEdges());
     }
+    
+    @Test
+    public void testModificationCount() {
+        int modCount = graph.getModificationCount();
+        
+        graph.addEdge(0, 1, 2.0);
+        assertEquals(modCount += 3, graph.getModificationCount());
+        
+        graph.addEdge(0, 1, 3.0);
+        assertEquals(modCount += 1, graph.getModificationCount());
+        
+        graph.addEdge(0, 1, 3.0);
+        assertEquals(modCount, graph.getModificationCount());
+        
+        graph.addNode(2);
+        assertEquals(modCount += 1, graph.getModificationCount());
+        
+        graph.addEdge(0, 2);
+        assertEquals(modCount += 1, graph.getModificationCount());
+        
+        graph.addEdge(2, 0);
+        assertEquals(modCount += 1, graph.getModificationCount());
+        
+        graph.addEdge(2, 0);
+        assertEquals(modCount, graph.getModificationCount());
+        
+        graph.addEdge(0, 2);
+        assertEquals(modCount, graph.getModificationCount());
+        
+        graph.removeNode(2);
+        assertEquals(modCount += 3, graph.getModificationCount());
+        
+        graph.clear();
+        assertEquals(modCount += 3, graph.getModificationCount());
+    }
 }
