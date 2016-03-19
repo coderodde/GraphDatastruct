@@ -166,7 +166,7 @@ public class UndirectedGraph extends AbstractGraph {
 
     @Override
     public void clear() {
-        modificationCount += map.size();
+        modificationCount += map.size() + edges;
         map.clear();
         edges = 0;
     }

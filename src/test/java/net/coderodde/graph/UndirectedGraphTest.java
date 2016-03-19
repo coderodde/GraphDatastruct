@@ -276,4 +276,46 @@ public class UndirectedGraphTest {
         graph.clear();
         assertEquals(0, graph.size());
     }
+    
+    @Test
+    public void testModificationCount() {
+        int modCount = graph.getModificationCount();
+        
+        assertTrue(graph.addEdge(0, 1, 2.0));
+        assertEquals(modCount += 3, graph.getModificationCount());
+        
+        assertTrue(graph.addEdge(0, 1, 2.1));
+        assertEquals(modCount += 1, graph.getModificationCount());
+        
+        assertFalse(graph.addEdge(0, 1, 2.1));
+        assertEquals(modCount, graph.getModificationCount());
+        
+        assertFalse(graph.addEdge(1, 0, 2.1));
+        assertEquals(modCount, graph.getModificationCount());
+        
+        assertTrue(graph.addNode(3));
+        assertEquals(modCount += 1, graph.getModificationCount());
+        
+        assertFalse(graph.addNode(3));
+        assertEquals(modCount, graph.getModificationCount());
+        
+        assertTrue(graph.addEdge(3, 0));
+        assertEquals(modCount += 1, graph.getModificationCount());
+        
+        assertTrue(graph.removeNode(1));
+        assertEquals(modCount += 2, graph.getModificationCount());
+        
+        assertTrue(graph.addEdge(1, 2));
+        assertEquals(modCount += 3, graph.getModificationCount());
+        
+        assertTrue(graph.removeEdge(2, 1));
+        assertEquals(modCount += 1, graph.getModificationCount());
+        
+        assertFalse(graph.removeEdge(1, 2));
+        assertEquals(modCount, graph.getModificationCount());
+        
+        graph.clear();
+            
+        assertEquals(modCount += 5, graph.getModificationCount());
+    }
 }
